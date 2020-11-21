@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    #box {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    .block {
+      height: 50px;
+      width: 50px;
+      background-color: cornflowerblue;
+      position: absolute;
+    }
+
+    button {
+      position: absolute;
+      bottom: 0;
+      width: 100px;
+      height: 50px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="box">
+    <div class="block">
+    </div>
+    <button>演示1</button>
+    <button style="left:100px">演示2</button>
+    <button style="left:200px">演示3</button>
+  </div>
+
+  <script>
+    //第一题
+    let block = document.querySelector(".block");
+    let box = document.querySelector("#box");
+    let btn = document.querySelectorAll('button');
+    let boxwidth = box.offsetWidth;
+    let moveX = 5;
+    let time = true;
+    block.style.backgroundColor = 'red';
+    block.style.left = 0 + 'px';
+
+    function blockmove() {
+      setTimeout(() => {
+        block.style.left = moveX + 'px';
+        moveX += 5;
+        if (parseInt(block.style.left.replace('px', '')) >= boxwidth) {
+          moveX = 0;
+        };
+        if (true) {
+          blockmove();
+        };
+      }, 10);
+    }
+
+    //第二题
+    function Block(x, y, speedX, lay) {
+      this.x = x || 0;
+      this.y = y || 0;
+      this.block = document.createElement('div');
+      this.speedX = speedX || 5;
+      this.lay = lay || 10;
+      this.increaseX = speedX;
+      this.recordX = 0;
+    };
+
+    Block.prototype.create = function () {
+      this.block.style.width = 50 + 'px';
+      this.block.style.height = 50 + 'px';
+      this.block.style.backgroundColor = 'rgb(' + Math.random() * 255 + ',' + Math.random() * 255 + ',' + Math
+        .random() * 255 + ')';
+      this.block.style.left = this.x + 'px';
+      this.block.style.top = this.y + 'px';
+      this.block.style.position = 'absolute';
+      box.appendChild(this.block);
+    };
+
+    Block.prototype.blockmove = function () {
+      setTimeout(() => {
+        this.block.style.left = this.speedX + this.x + 'px';
+        this.recordX = this.block.style.left;
+        this.speedX += this.increaseX;
+        if (parseInt(this.block.style.left.replace('px', '')) >= boxwidth) {
+          this.speedX = 0;
+          this.x = 0;
+        };
+        if (true) {
+          this.blockmove();
+        };
+      }, this.lay);
+    };
+
+    //第三题
+    function turnback(block1, block2) {
+      let x1 = parseInt(block1.recordX.replace('px', ''));
+      let x2 = parseInt(block2.recordX.replace('px', ''));
+      let dx = x1 - x2;
+
+      if (Math.abs(dx) <= 50 && time) {
+        time = false;
+        block1.increaseX *= -1;
+        block2.increaseX *= -1;
+        setTimeout(() => {
+          time = true;
+        }, 250);
+      }
+
+      if (x1 < 0 && time || x1 > boxwidth - 20 && time) {
+        time = false;
+        block1.increaseX *= -1;
+        setTimeout(() => {
+          time = true;
+        }, 250);
+      }
+
+      if (x2 < 0 && time || x2 > boxwidth - 20 && time) {
+        time = false;
+        block2.increaseX *= -1;
+        setTimeout(() => {
+          time = true;
+        }, 250);
+      }
+    };
+
+    //第四题
+    btn[0].onclick = function () {
+      blockmove();
+    }
+
+    btn[1].onclick = function () {
+      let a = new Block(100, 250, 5, 5);
+      a.create();
+      a.blockmove();
+
+      let b = new Block(250, 450, 5, 10);
+      b.create();
+      b.blockmove();
+    }
+
+    btn[2].onclick = function () {
+      let c = new Block(100, 600, 5, 5);
+      c.create();
+      c.blockmove();
+
+      let d = new Block(1300, 600, -5, 10);
+      d.create();
+      d.blockmove();
+
+      setInterval(() => {
+        turnback(c, d)
+      }, 10);
+    }
+  </script>
+</body>
+
+</html>
